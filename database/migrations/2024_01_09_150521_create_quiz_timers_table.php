@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('testn_quiz_student_marks', function (Blueprint $table) {
+        Schema::create('quiz_timers', function (Blueprint $table) {
             $table->id();
+            $table->longText("QuizTimer")->nullable();
+            $table->longText("StudentId")->nullable();
+            $table->integer("TimeLeft")->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('testn_quiz_student_marks');
+        Schema::dropIfExists('quiz_timers');
     }
 };
