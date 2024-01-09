@@ -17,7 +17,7 @@ class SetupController extends Controller
 
 
     function Setup(Request $req) {
-        $s = Setup::firstOrNew();
+        $s = new Setup();
 
         $response = Http::post('https://api.hydottech.com/api/CompanyTokenSetUp', [
             'token' => $req->token
@@ -91,8 +91,8 @@ class SetupController extends Controller
     }
 
     function CompanyToken(Request $req) {
-        $s = CompanyToken::firstOrNew();
-        $c = Setup::where('id', '>', 0)->first();
+        $s = new CompanyToken();
+        $c = Setup::where('CompanyId', $req->CompanyId)->latest()->first();;
 
         if(!$c){
             return response()->json(["message"=>"Complete your Setup process first"],400);
@@ -197,8 +197,8 @@ class SetupController extends Controller
     }
 
 
-    function PrepaidMeter(){
-        $c = CompanyToken::where('id', '>', 0)->first();
+    function PrepaidMeter($CompanyId){
+        $c = CompanyToken::where('CompanyId', $CompanyId)->latest()->first();
 
         if(!$c){
             return response()->json(["message"=>"No products subscribed"],400);
