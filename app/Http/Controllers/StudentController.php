@@ -4,10 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Models\CompanyToken;
+use Carbon\Carbon;
 
 class StudentController extends Controller
 {
     function RegisterStudent(Request $req){
+
+        $response = $this->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
 
         $s = new Student();
 
@@ -15,8 +23,18 @@ class StudentController extends Controller
             $s->ProfilePic = $req->file("ProfilePic")->store("","public");
         }
 
-        if($req->filled("StudentId")){
-            $s->StudentId = strval(10,000+$s->id);
+        $s->save();
+
+
+$s->StudentId = strval(10000 + $s->id);
+
+
+        
+       
+        
+
+        if($req->filled("CompanyId")){
+            $s->CompanyId = $req->CompanyId;
         }
 
         if($req->filled("FirstName")){
@@ -103,6 +121,60 @@ class StudentController extends Controller
             $s->EmergencyAlternatePhoneNumber  = $req ->EmergencyAlternatePhoneNumber  ;
         }
 
+        if($req->filled("RelationshipWithChild")){
+            $s->RelationshipWithChild = $req->RelationshipWithChild  ;
+        }
+
+        if($req->filled("ParentPhoneNumber")){
+            $s->ParentPhoneNumber = $req->ParentPhoneNumber  ;
+        }
+
+        if($req->filled("Religion")){
+            $s->Religion = $req->Religion  ;
+        }
+
+        if($req->filled("Email")){
+            $s->Email = $req->Email  ;
+        }
+
+        if($req->filled("PhoneNumber")){
+            $s->PhoneNumber = $req->PhoneNumber  ;
+        }
+
+        if($req->filled("AlternatePhoneNumber")){
+            $s->AlternatePhoneNumber = $req->AlternatePhoneNumber  ;
+        }
+
+        if($req->filled("MedicalIInformation")){
+            $s->MedicalIInformation = $req->MedicalIInformation  ;
+        }
+
+        if($req->filled("Level")){
+            $s-> Level= $req-> Level ;
+        }
+
+        if($req->filled("AdmissionDate")){
+            $s->AdmissionDate = $req->AdmissionDate  ;
+        }
+
+        if($req->filled("TheAcademicYear")){
+            $s->TheAcademicYear = $req->TheAcademicYear  ;
+        }
+
+        if($req->filled("TheAcademicTerm")){
+            $s->TheAcademicTerm = $req->TheAcademicTerm  ;
+        }
+
+       
+            $s->Role = "Student" ;
+        
+
+       $saver = $s->save();
+
+       if($saver){
+
+        return response()->json(["message" => "Student Admitted Successfully"],200);
+       }
        
 
 
@@ -115,6 +187,47 @@ class StudentController extends Controller
 
 
 
+
+function TestPrepaid($CompanyId){
+    $response = $this->PrepaidMeter($req->CompanyId);
+
+    if($response->getStatusCode() !== 200){
+        return $response;
+    }
+
+}
+
+
+
+    function PrepaidMeter($CompanyId){
+        $c = CompanyToken::where('CompanyId', $CompanyId)->latest()->first();
+
+        if(!$c){
+            return response()->json(["message"=>"No products subscribed"],400);
+        }
+
+        $systemDate = Carbon::now();
+
+        if($systemDate < $c->CurrentDate){
+            return response()->json(["message"=>"Verify that your server is configured with the accurate date and time settings."],400);
+        }
+        else{
+            $c->CurrentDate = $systemDate;
+            $c->save();
+        }
+
+        if($systemDate > $c->ExpireDate){
+            return response()->json(["message"=>"Your subscription has expired. To continue enjoying our service, please renew your subscription. For further details, please reach out to business@hydottech.com."],400);
+
+        }
+
+
+
+
+
+
+
+    }
 
     function IdGenerator(): string {
         $randomID = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);

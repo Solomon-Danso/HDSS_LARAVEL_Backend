@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post("Setup",[SetupController::class,"Setup"]);
 Route::post("CompanyToken",[SetupController::class,"CompanyToken"]);
-Route::get("PrepaidMeter",[SetupController::class,"PrepaidMeter"]);
-
+Route::get("PrepaidMeter/{CompanyId}",[SetupController::class,"PrepaidMeter"]);
+Route::post("RegisterStudent",[StudentController::class,"RegisterStudent"]);
+Route::get("TestPrepaid/{CompanyId}",[StudentController::class,"TestPrepaid"]);
 
