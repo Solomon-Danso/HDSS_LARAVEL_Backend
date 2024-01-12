@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post("Setup",[SetupController::class,"Setup"]);
 Route::post("CompanyToken",[SetupController::class,"CompanyToken"]);
-Route::get("PrepaidMeter/{CompanyId}",[SetupController::class,"PrepaidMeter"]);
 Route::post("RegisterStudent",[StudentController::class,"RegisterStudent"]);
-Route::get("TestPrepaid/{CompanyId}",[StudentController::class,"TestPrepaid"]);
+Route::post("BulkRegisterStudent",[StudentController::class,"BulkRegisterStudent"]);
 

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\CompanyToken;
 use Carbon\Carbon;
+use App\Jobs\ProcessBulkStudentRegistration;
+
 
 class StudentController extends Controller
 {
@@ -175,27 +177,45 @@ $s->StudentId = strval(10000 + $s->id);
 
         return response()->json(["message" => "Student Admitted Successfully"],200);
        }
+       else{
+        return response()->json(["message" => "Student Admission Failed"],400);
+
+       }
        
 
 
     }
 
 
+    public function BulkRegisterStudent(Request $req)
+    {
+        $response = $this->PrepaidMeter($req->CompanyId);
+    
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+    
+        if ($req->hasFile('excel_file')) {
+            $file = $req->file('excel_file');
+            $filePath = $file->getPathname();
+    
+            
+               
+            // Dispatch the job to process the bulk student registration
+            ProcessBulkStudentRegistration::dispatch($filePath, $req->CompanyId);
+            return response()->json(["message" => "File uploaded successfully. Students will be processed in the background."], 200);
 
-
-
-
-
-
-
-function TestPrepaid($CompanyId){
-    $response = $this->PrepaidMeter($req->CompanyId);
-
-    if($response->getStatusCode() !== 200){
-        return $response;
+        }
+    
+        return response()->json(["message" => "No file uploaded."], 400);
     }
+    
 
-}
+
+
+
+
+
 
 
 
