@@ -400,6 +400,38 @@ class StudentController extends Controller
         return $s;
     }
 
+    public function GetStudentInAClass(Request $req)
+    {
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+    
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+    
+        $students = Student::where('Level', $req->Level)
+            ->where("CompanyId", $req->CompanyId)
+            ->orderBy('LastName')
+            ->get()->toArray();
+    
+        return $students;
+    }
+
+    public function GetStudentInASchool(Request $req)
+    {
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+    
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+    
+        $students = Student::where("CompanyId", $req->CompanyId)
+        ->orderBy('LastName')
+        ->get()->toArray();
+    
+        return $students;
+    }
+    
+
     function DeleteStudent($StudentId, $CompanyId){
         $response = $this->audit->PrepaidMeter($CompanyId);
 
@@ -412,6 +444,12 @@ class StudentController extends Controller
             return response()->json(["message"=>"Student does not exist"],400);
         }
         $saver = $s->delete();
+        if($saver){
+            return response()->json(["message"=>"Student has been successfully Deleted"],200);
+        }
+        else{
+            return response()->json(["message"=>"Student Deletion Failed"],400);
+        }
 
         return $s;
     }

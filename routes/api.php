@@ -24,5 +24,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post("Setup",[SetupController::class,"Setup"]);
 Route::post("CompanyToken",[SetupController::class,"CompanyToken"]);
 Route::post("RegisterStudent",[StudentController::class,"RegisterStudent"]);
+Route::post("UpdateStudent",[StudentController::class,"UpdateStudent"]);
+
 Route::post("BulkRegisterStudent",[StudentController::class,"BulkRegisterStudent"]);
+Route::get("GetStudent/{StudentId}/{CompanyId}",[StudentController::class,"GetStudent"]);
+Route::post("GetStudentInAClass",[StudentController::class,"GetStudentInAClass"]);
+Route::post("GetStudentInASchool",[StudentController::class,"GetStudentInASchool"]);
+Route::delete("DeleteStudent/{StudentId}/{CompanyId}",[StudentController::class,"DeleteStudent"]);
+
+
+
+
+
 
