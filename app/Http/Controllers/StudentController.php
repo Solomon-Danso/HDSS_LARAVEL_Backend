@@ -495,8 +495,24 @@ class StudentController extends Controller
             ->orderBy('LastName')
             ->get();
     
-        return Excel::download(new StudentsExport($students), 'students.xlsx');
+        return Excel::download(new StudentsExport($students), $req->Level.'.xlsx');
     }
+
+    public function GetStudentInSchoolFile(Request $req)
+    {
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+    
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+    
+        $students = Student::where("CompanyId", $req->CompanyId)
+            ->orderBy('LastName')
+            ->get();
+    
+        return Excel::download(new StudentsExport($students), 'EntireStudentList.xlsx');
+    }
+
 
 
 

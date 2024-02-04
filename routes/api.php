@@ -35,6 +35,9 @@ Route::post("GetStudentInAClass",[StudentController::class,"GetStudentInAClass"]
 Route::post("GetStudentInAClassFile",[StudentController::class,"GetStudentInAClassFile"]);
 
 Route::post("GetStudentInASchool",[StudentController::class,"GetStudentInASchool"]);
+Route::post("GetStudentInSchoolFile",[StudentController::class,"GetStudentInSchoolFile"]);
+
+
 Route::delete("DeleteStudent/{StudentId}/{CompanyId}",[StudentController::class,"DeleteStudent"]);
 
 
