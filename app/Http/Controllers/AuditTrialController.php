@@ -9,6 +9,7 @@ use App\Models\Admin;
 use App\Models\AuditTrail;
 use Carbon\Carbon;
 use App\Models\CompanyToken;
+use App\Models\Authentic;
 
 class AuditTrialController extends Controller
 {
@@ -16,11 +17,17 @@ class AuditTrialController extends Controller
     function StudentAudit($StudentId,$CompanyId, $Action) {
         $ipAddress = $_SERVER['REMOTE_ADDR']; // Get user's IP address
     
-        $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
+        try{
+            $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
     
         $country = $ipDetails->country ?? 'Unknown';
         $city = $ipDetails->city ?? 'Unknown';
+        $latitude = $ipDetails->loc ?? ''; // Latitude
     
+        }catch(\Exception $e){
+            $country = $city = $latitude = null;
+        }
+        
         // Get user agent information
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
     
@@ -40,7 +47,7 @@ class AuditTrialController extends Controller
         }
     
        
-        $latitude = $ipDetails->loc ?? ''; // Latitude
+       
         $googleMapsLink = "https://maps.google.com/?q={$latitude}";
     
         // Create a new AuditTrail instance and save the log to the database
@@ -65,11 +72,16 @@ class AuditTrialController extends Controller
     function TeacherAudit($TeacherId,$CompanyId,$Action) {
         $ipAddress = $_SERVER['REMOTE_ADDR']; // Get user's IP address
     
-        $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
+        try{
+            $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
     
         $country = $ipDetails->country ?? 'Unknown';
         $city = $ipDetails->city ?? 'Unknown';
+        $latitude = $ipDetails->loc ?? ''; // Latitude
     
+        }catch(\Exception $e){
+            $country = $city = $latitude = null;
+        }
         // Get user agent information
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
     
@@ -87,7 +99,7 @@ class AuditTrialController extends Controller
         $urlPath = $_SERVER['REQUEST_URI'];
     
        
-        $latitude = $ipDetails->loc ?? ''; // Latitude
+       
         $googleMapsLink = "https://maps.google.com/?q={$latitude}";
     
         // Create a new AuditTrail instance and save the log to the database
@@ -111,11 +123,16 @@ class AuditTrialController extends Controller
     function AdminAudit($AdminId,$CompanyId,$Action) {
         $ipAddress = $_SERVER['REMOTE_ADDR']; // Get user's IP address
     
+        try{
         $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
     
         $country = $ipDetails->country ?? 'Unknown';
         $city = $ipDetails->city ?? 'Unknown';
+        $latitude = $ipDetails->loc ?? ''; // Latitude
     
+        }catch(\Exception $e){
+            $country = $city = $latitude = null;
+        }
         // Get user agent information
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
     
@@ -132,7 +149,6 @@ class AuditTrialController extends Controller
         $urlPath = $_SERVER['REQUEST_URI'];
     
        
-        $latitude = $ipDetails->loc ?? ''; // Latitude
         $googleMapsLink = "https://maps.google.com/?q={$latitude}";
     
         // Create a new AuditTrail instance and save the log to the database
@@ -224,5 +240,26 @@ class AuditTrialController extends Controller
     
         return $os;
     }
+
+//For forgotten password, the user will have to contact admin. the admin will run the function again to regenerate a new password for the users 
+    function Authenticator($UserId, $ProfilePic, $Role, $UserName, $Password,$CompanyId){
+
+        $s = new Authentic();
+
+        $s->UserId = $UserId;
+        $s-> ProfilePic = $ProfilePic;
+        $s->Role = $Role;
+        $s->UserName = $UserName;
+        $s->RawPassword = $Password;
+        $s->CompanyId = $CompanyId;
+        $s->Password = bcrypt($Password);
+
+        $s->save();
+
+
+    }
+
+
+
     
 }
