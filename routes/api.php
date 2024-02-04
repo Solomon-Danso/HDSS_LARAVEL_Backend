@@ -29,6 +29,8 @@ Route::post("UpdateStudent",[StudentController::class,"UpdateStudent"]);
 Route::post("BulkRegisterStudent",[StudentController::class,"BulkRegisterStudent"]);
 Route::get("GetStudent/{StudentId}/{CompanyId}",[StudentController::class,"GetStudent"]);
 Route::post("GetStudentInAClass",[StudentController::class,"GetStudentInAClass"]);
+Route::post("GetStudentInAClassFile",[StudentController::class,"GetStudentInAClassFile"]);
+
 Route::post("GetStudentInASchool",[StudentController::class,"GetStudentInASchool"]);
 Route::delete("DeleteStudent/{StudentId}/{CompanyId}",[StudentController::class,"DeleteStudent"]);
 

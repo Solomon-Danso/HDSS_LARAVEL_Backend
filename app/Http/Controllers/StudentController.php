@@ -8,6 +8,8 @@ use App\Models\Student;
 use App\Http\Controllers\AuditTrialController;
 
 use App\Jobs\ProcessBulkStudentRegistration;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentsExport;
 
 
 class StudentController extends Controller
@@ -456,7 +458,21 @@ class StudentController extends Controller
 
 
    
-
+    public function GetStudentInAClassFile(Request $req)
+    {
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+    
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+    
+        $students = Student::where('Level', $req->Level)
+            ->where("CompanyId", $req->CompanyId)
+            ->orderBy('LastName')
+            ->get();
+    
+        return Excel::download(new StudentsExport($students), 'students.xlsx');
+    }
 
 
 
