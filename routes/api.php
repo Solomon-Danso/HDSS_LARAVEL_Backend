@@ -22,7 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post("Setup",[SetupController::class,"Setup"]);
+Route::post("LocalSetup",[SetupController::class,"LocalSetup"]);
 Route::post("CompanyToken",[SetupController::class,"CompanyToken"]);
+Route::post("LocalCompanyToken",[SetupController::class,"LocalCompanyToken"]);
 Route::post("RegisterStudent",[StudentController::class,"RegisterStudent"]);
 Route::post("UpdateStudent",[StudentController::class,"UpdateStudent"]);
 

@@ -83,12 +83,198 @@ class SetupController extends Controller
                 return response()->json(["message" => $s->CompanyName." Setup Completed"],200);
             }
 
-            return response()->json(['message' => 'An error occoured, please ensure you are connected to the internet'],400);
-        } else {
+              } else {
             // Handle API request failure
             return response()->json(['message' => 'Please ensure your internet connection is active. The provided Token is incorrect or has expired.'], 400);
         }
     }
+
+    function LocalSetup(Request $req) {
+        
+        $s = new Setup();
+
+
+
+        $response = Http::post("http://".$req->Server.":".$req->Port.'/api/CompanyTokenSetUp', [
+            'token' => $req->token
+        ]);
+
+        if ($response->successful()) {
+            $h = $response->json(); // Extract JSON data from the response
+
+
+            if (isset($h['CompanyLogo'])) {
+                $logoUrl = "http://".$req->Server.":".$req->Port."/storage/public/" . $h['CompanyLogo'];
+
+                // Define the path to store the logo in the public directory
+                $storagePath = 'images/company_logo'; // Path relative to the 'public' folder
+
+                // Create the directory if it doesn't exist
+                if (!file_exists(public_path($storagePath))) {
+                    mkdir(public_path($storagePath), 0755, true);
+                }
+
+                $filename = 'logo.jpg'; // Define the filename or generate one dynamically
+                $downloadedFilePath = public_path($storagePath . '/' . $filename);
+
+                // Use Guzzle HTTP client to download the image and store it in the public folder
+                $httpClient = new \GuzzleHttp\Client();
+                $response = $httpClient->get($logoUrl);
+
+                if ($response->getStatusCode() === 200) {
+                    file_put_contents($downloadedFilePath, $response->getBody());
+
+                    // Update the CompanyLogo field in the Setup model with the path relative to the 'public' folder
+                    $s->CompanyLogo = $storagePath . '/' . $filename;
+                } else {
+                    // Handle unsuccessful image download
+                    return response()->json(['message' => 'Failed to download the image'], 400);
+                }
+
+            }
+
+
+
+            $s->CompanyId = $h['CompanyId'];
+            $s->CompanyName = $h['CompanyName'];
+
+            $s->Location = $h['Location'];
+            $s->ContactPerson = $h['ContactPerson'];
+
+            $s->CompanyPhone = $h['CompanyPhone'];
+            $s->CompanyEmail = $h['CompanyEmail'];
+
+            $s->ContactPersonPhone = $h['ContactPersonPhone'];
+            $s->ContactPersonEmail = $h['ContactPersonEmail'];
+
+            $s->CompanyStatus = $h['CompanyStatus'];
+            $s->ProductId = $h['ProductId'];
+
+            $s->ProductName = $h['ProductName'];
+            $s->ProductSection = $h['ProductSection'];
+            $s->Token = $h['Token'];
+
+            $saver = $s->save();
+            if($saver){
+                return response()->json(["message" => $s->CompanyName." Setup Completed"],200);
+            }
+
+              } else {
+            // Handle API request failure
+            return response()->json(['message' => 'Please ensure your internet connection is active. The provided Token is incorrect or has expired.'], 400);
+        }
+    }
+
+
+    function LocalCompanyToken(Request $req) {
+        $s = new CompanyToken();
+        $c = Setup::where('CompanyId', $req->CompanyId)->latest()->first();;
+
+        if(!$c){
+            return response()->json(["message"=>"Complete your Setup process first"],400);
+        }
+
+        $response = Http::post("http://".$req->Server.":".$req->Port.'/api/CompanyToken', [
+            'token' => $req->token
+        ]);
+
+        if ($response->successful()) {
+            $h = $response->json(); // Extract JSON data from the response
+
+
+            if($c->CompanyId !==$h["CompanyId"]) {
+                return response()->json(["message"=>"You are not allowed to utilize a subscription from a different institution"],400);
+
+            }
+
+            if($c->ProductId !==$h["ProductId"]) {
+                return response()->json(["message"=>"You are not allowed to utilize a subscription from a different product"],400);
+
+            }
+
+
+            if (isset($h['CompanyLogo'])) {
+                $logoUrl = "http://".$req->Server.":".$req->Port."/storage/public/" . $h['CompanyLogo'];
+
+                // Define the path to store the logo in the public directory
+                $storagePath = 'images/company_logo'; // Path relative to the 'public' folder
+
+                // Create the directory if it doesn't exist
+                if (!file_exists(public_path($storagePath))) {
+                    mkdir(public_path($storagePath), 0755, true);
+                }
+
+                $filename = 'logo.jpg'; // Define the filename or generate one dynamically
+                $downloadedFilePath = public_path($storagePath . '/' . $filename);
+
+                // Use Guzzle HTTP client to download the image and store it in the public folder
+                $httpClient = new \GuzzleHttp\Client();
+                $response = $httpClient->get($logoUrl);
+
+                if ($response->getStatusCode() === 200) {
+                    file_put_contents($downloadedFilePath, $response->getBody());
+
+                    // Update the CompanyLogo field in the Setup model with the path relative to the 'public' folder
+                    $s->CompanyLogo = $storagePath . '/' . $filename;
+                } else {
+                    // Handle unsuccessful image download
+                    return response()->json(['message' => 'Failed to download the image'], 400);
+                }
+
+            }
+
+
+
+            $s->CompanyId = $h['CompanyId'];
+            $s->CompanyName = $h['CompanyName'];
+
+            $s->Location = $h['Location'];
+            $s->ContactPerson = $h['ContactPerson'];
+
+            $s->CompanyPhone = $h['CompanyPhone'];
+            $s->CompanyEmail = $h['CompanyEmail'];
+
+            $s->ContactPersonPhone = $h['ContactPersonPhone'];
+            $s->ContactPersonEmail = $h['ContactPersonEmail'];
+
+            $s->CompanyStatus = $h['CompanyStatus'];
+            $s->ProductId = $h['ProductId'];
+
+            $s->Token = $h['Token'];
+            $s->Subcriptions = $h['Subcriptions'];
+
+
+            $startDate = Carbon::parse($h['StartDate']);
+            $systemDate = Carbon::parse($h['SystemDate']);
+            $currentDate = Carbon::parse($h['CurrentDate']); // Assuming the format is '2024-01-08T17:39:46.895862Z'
+            $expireDate = Carbon::parse($h['ExpireDate']);
+
+            // Assign Carbon instances to corresponding properties
+            $s->StartDate = $startDate;
+            $s->SystemDate = $systemDate;
+            $s->CurrentDate = $currentDate;
+            $s->ExpireDate = $expireDate;
+
+
+
+            $s->TokenStatus = $h['TokenStatus'];
+
+
+            $saver = $s->save();
+            if($saver){
+                return response()->json(["message" => $s->CompanyName." Setup Completed"],200);
+            }
+
+            return response()->json(['message' => 'An error occoured, please ensure you are connected to the internet'],400);
+        } else {
+            // Handle API request failure
+            return response()->json(['message' => "Token has expired or incorrect"], 400);
+        }
+    }
+
+
+
+
 
     function CompanyToken(Request $req) {
         $s = new CompanyToken();
