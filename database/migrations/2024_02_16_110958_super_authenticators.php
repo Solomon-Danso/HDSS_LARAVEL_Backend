@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('authentics', function (Blueprint $table) {
-           $table->boolean("IsLoggedIn")->default(false);
-           $table->boolean("IsPasswordReset")->default(false);
-           $table->longText("RawPassword") -> nullable();
-           $table ->dateTime("LastLogin") -> nullable();
-           $table ->longText("DeviceType") -> nullable();
-           $table ->longText("OS") -> nullable();
-           $table ->longText("Country") -> nullable();
-           $table ->longText("City") -> nullable();
-           $table ->longText("CompanyId") -> nullable();
+            $table->boolean("IsBlocked")->default(false);
+            $table ->dateTime("LastLogout") -> nullable();
+            $table ->dateTime("TimeSpent") -> nullable();
+
 
         });
     }

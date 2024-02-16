@@ -42,7 +42,7 @@ class StudentController extends Controller
         $s->save();
 
 
-    $s->StudentId = strval(10000 + $s->id);
+        $s->StudentId = strval(10000 + $s->id);
 
 
         

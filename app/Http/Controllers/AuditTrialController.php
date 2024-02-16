@@ -10,6 +10,7 @@ use App\Models\AuditTrail;
 use Carbon\Carbon;
 use App\Models\CompanyToken;
 use App\Models\Authentic;
+use App\Models\Notifier;
 
 class AuditTrialController extends Controller
 {
@@ -258,6 +259,23 @@ class AuditTrialController extends Controller
 
 
     }
+
+    function Notify($To, $From, $Subject, $Section, $Content, $CompanyId){
+        $s = new Notifier();
+
+        $s->To = $To;
+        $s->From = $From;
+        $s->Subject = $Subject;
+        $s->Section = $Section;
+        $s->Content = $Content;
+        $s->CompanyId = $CompanyId;
+
+        $s->save();
+
+    }
+
+
+
 
 
 
