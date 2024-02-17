@@ -54,6 +54,11 @@ class Authenticates extends Controller
 
             $user->LoginAttempt = 0;
             $user->IsBlocked = false;
+            $user->IsLoggedIn = true;
+            $user->SessionID = $this->audit->IdGenerator();
+            $user-> Status = "Online";
+            $user->expirationTime = now()->addSeconds(40);
+
 
             $c = [
                 "FullName" => $user->FullName,
@@ -167,6 +172,21 @@ class Authenticates extends Controller
        
     }
 
+    function HeartBeat($UserId){
+        $user = Authentic::where('UserId', $req->UserId)->first();
+        if($user==null){
+            return response()->json(["message"=>"User Not Found"],400);
+        }
+
+        $user-> Status = "Online";
+        $user->expirationTime = Carbon::now()->addSeconds(40);
+
+        $user -> save();
+
+    }
+
+
+
     function ChangeDefaultPassword(Request $req){
         
         $response = $this->audit->PrepaidMeter($req->CompanyId);
@@ -193,7 +213,8 @@ class Authenticates extends Controller
             }
 
 
-        }else{
+        }
+        else{
            
             $userAgent = $_SERVER['HTTP_USER_AGENT'];
             $country;

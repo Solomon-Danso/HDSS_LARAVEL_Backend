@@ -11,6 +11,9 @@ use Carbon\Carbon;
 use App\Models\CompanyToken;
 use App\Models\Authentic;
 use App\Models\Notifier;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Illuminate\Support\Facades\Storage;
 
 class AuditTrialController extends Controller
 {
@@ -279,5 +282,168 @@ class AuditTrialController extends Controller
 
 
 
+
+
+    function generatePDF() {
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
     
-}
+        // Generate URL for student image
+       // $studentImageUrl = Storage::url("BHtMigLo4j2OXauaK5YiLRmEOKd7IIkrMjLDFBhj.png");
+    
+        // Generate HTML content for PDF
+        $htmlelement = <<<HTML
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+            body {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+    
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: fade-in 0.5s ease-out;
+            
+        }
+    
+        .container img {
+            width: 120px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    
+        .header {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    
+        .center{
+            text-align: center;
+        }
+    
+        .locbold {
+            font-size: 15px;
+            float: left;
+            text-align: center;
+        }
+    
+        .school-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    
+        .content {
+            text-align: justify;
+        }
+    
+        .contentp {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-weight: 900;
+        }
+    
+        .spacer{
+            margin-left: 200px;
+        }
+        .bold{
+            font-size: 15px;
+            float: left; /* Float the left div to the left */
+            text-align: left; /* Align text to the left within the left div */
+        }
+        .lightbold{
+            font-size: 15px;
+        }
+        .school{
+            font-size: 30px;
+        }
+    
+        /* Add individual styles for .left, .center, and .right */
+        .left {
+            float: left; /* Float the left div to the left */
+            width: 30%; /* Adjust the width as needed */
+            padding: 10px; /* Add padding for spacing */
+            box-sizing: border-box; /* Include padding and border in the width */
+            text-align: left; /* Align text to the left within the left div */
+        }
+    
+        .right {
+            float: right; /* Float the right div to the left */
+            padding: 10px; /* Add padding for spacing */
+            box-sizing: border-box; /* Include padding and border in the width */
+            text-align: right; /* Align text to the right within the right div */
+            margin-left:120px;
+            margin-top: -2300rem;
+        }
+        </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='center'> 
+                
+                </div>
+                <br/>
+                <div>
+                    <span class='bold'>Dear ,</span>
+                    <span class='spacer lightbold'></span>
+                </div>
+                <br/>
+                <div class='center'> 
+                    <div class='school'></div>
+                    <div class='locbold'></div>
+                </div>
+                <hr/>
+                <div class='content'>
+                    <p class='contentp'>1. We are delighted to extend an offer of admission to <b></b> for this academic year. It brings us great pleasure to welcome you to our school community, and we are excited about the prospect of having you as a student in our school.</p>
+                    <p class='contentp'>2. Your application to  was thoroughly reviewed by our admissions committee, and we were impressed by your academic potential, your eagerness to learn, and the positive qualities you exhibited during the admission process. Your enthusiasm for education and your readiness to engage with our school curriculum make you an excellent fit for our school.</p>
+                    <p class='contentp'>3. Your student identification number is. This is the number you will use throughout your studies at our school. Your password is ; please be sure not to misplace this information.</p>
+                    <div class='right'>
+                        Yours Faithfully,<br/>
+                        .........................<br/>
+                    
+                    </div>
+                </div>
+                <br/><br/>
+                <div class='center'> 
+                    
+                </div>
+            </div>
+        </body>
+        </html>
+        HTML;
+        
+            // Load HTML content into Dompdf
+            $dompdf->loadHtml($htmlelement);
+        
+            // Render PDF
+            $dompdf->render();
+        
+            // Get PDF content
+            $pdfData = $dompdf->output();
+        
+            return $pdfData;
+        }
+        
+
+
+
+
+    
+
+    
+    }

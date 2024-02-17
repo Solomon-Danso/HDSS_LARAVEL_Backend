@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Authenticates;
+use App\Http\Controllers\AuditTrialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +27,7 @@ Route::post("LogIn",[Authenticates::class,"LogIn"]);
 Route::post("ChangeDefaultPassword",[Authenticates::class,"ChangeDefaultPassword"]);
 Route::get("Unlocker/{UserId}",[Authenticates::class,"Unlocker"]);
 Route::get("ViewResetPassword/{UserId}",[Authenticates::class,"ViewResetPassword"]);
-
+Route::get("generatePDF",[AuditTrialController::class,"generatePDF"]);
 
 
 
