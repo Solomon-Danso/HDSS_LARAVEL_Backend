@@ -185,6 +185,19 @@ class Authenticates extends Controller
 
     }
 
+    function DashBoardChecker($SessionID){
+       $worked = false;
+        $user = Authentic::where('SessionID', $req->SessionID)->first();
+        if($user==null){
+            return response()->json(["message"=>"User Not Found"],400);
+        }
+
+        $worked = true;
+
+        return response->json(["message"=> $worked],200);
+
+    }
+
 
 
     function ChangeDefaultPassword(Request $req){

@@ -27,6 +27,11 @@ Route::post("LogIn",[Authenticates::class,"LogIn"]);
 Route::post("ChangeDefaultPassword",[Authenticates::class,"ChangeDefaultPassword"]);
 Route::get("Unlocker/{UserId}",[Authenticates::class,"Unlocker"]);
 Route::get("ViewResetPassword/{UserId}",[Authenticates::class,"ViewResetPassword"]);
+Route::get("HeartBeat/{UserId}",[Authenticates::class,"HeartBeat"]);
+Route::get("DashBoardChecker/{SessionID}",[Authenticates::class,"DashBoardChecker"]);
+
+
+
 Route::get("generatePDF",[AuditTrialController::class,"generatePDF"]);
 
 
