@@ -47,7 +47,7 @@ class BulkTeachersRegistration implements ShouldQueue
                     $s->{$header} = $row[$index];
                 }
     
-                $s->Role = "Teacher";
+                $s->IsSuspended = false;
     
                 $saver = $s->save();
     
