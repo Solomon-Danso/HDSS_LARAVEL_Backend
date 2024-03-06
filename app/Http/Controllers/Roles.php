@@ -32,6 +32,18 @@ class Roles extends Controller
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "CreateRoles");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+
+
+
+
+
         
         $s = new PrimaryRole();
 
@@ -63,6 +75,12 @@ class Roles extends Controller
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteRoles");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
        
         $s = PrimaryRole::where("id",$req->id)->first();
         if($s !== null){
@@ -78,13 +96,21 @@ class Roles extends Controller
         
     }
 
+
     function CreateUserDetailedRole(Request $req){
         $response = $this->audit->PrepaidMeter($req->CompanyId);
 
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
-        $PrimaryRoleList = PrimaryRole::where("RoleName",$req->RoleName)->get();
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "AssignRolesToUsers");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        $PrimaryRoleList = PrimaryRole::where("RoleName",$req->RoleName)->pluck('RoleFunction');
 
         foreach($RoleFunction as $PrimaryRoleList){
             $s = new UserDetailedRole();
@@ -101,6 +127,94 @@ class Roles extends Controller
 
         return response()->json(["message"=>"User Assigned To Role Successfully"],200);
 
+
+    }
+
+
+    function CreateAnotherUserDetailedRole(Request $req){
+        
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "AddNewRolesToUsers");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+        
+        $s = new UserDetailedRole();
+        if($req->filled("UserId")){
+            $s->UserId = $req->UserId;
+        }
+
+        if($req->filled("RoleFunction")){
+            $s->RoleFunction = $req->RoleFunction;
+        }
+
+        $saver = $s->save();
+        if ($saver){
+            return response()->json(["message"=>$s->RoleFunction." assigned to this user"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not assign ".$s->RoleFunction." to this user"],200);
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function ViewUserDetailedRole(Request $req){
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "ViewUserRoles");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+
+        $RoleFunctionList = UserDetailedRole::where("UserId",$req->UserId)->get();
+
+        return response()->json(["message"=>$RoleFunctionList],200);
+    }
+
+    function DeleteUserDetailedRole(Request $req){
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteUserRole");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+
+        $s = UserDetailedRole::where("id",$req->id)->first();
+        if($s !== null){
+            $saver = $s->delete();
+            if($saver){
+                return response()->json(["message"=>"Deleted Successfully"],200);
+            }
+            else{
+                return response()->json(["message"=>"Deletion was not successful"],400);
+            }
+
+        }
 
     }
 

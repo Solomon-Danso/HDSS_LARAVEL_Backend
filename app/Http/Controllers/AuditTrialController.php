@@ -14,6 +14,7 @@ use App\Models\Notifier;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserDetailedRole;
 
 class AuditTrialController extends Controller
 {
@@ -175,6 +176,37 @@ class AuditTrialController extends Controller
     }
 
 
+    function RoleAuthenticator($SenderId, $RoleFunction){
+
+        $RoleFunctionList = UserDetailedRole::where("UserId",$SenderId)->pluck('RoleFunction');
+    
+        // Check if the RoleFunctionList is empty
+        if($RoleFunctionList->isEmpty()) {
+            return response()->json(["message"=>"User does not have any roles assigned"],400);
+        }
+    
+        // Flag to track if SuperAdmin role is found
+        $isSuperAdmin = false;
+    
+        foreach($RoleFunctionList as $Role){
+            if($Role === "SuperAdmin"){
+                // If the user is SuperAdmin, set the flag to true and break the loop
+                $isSuperAdmin = true;
+                break;
+            }
+        }
+    
+        // If the user is not SuperAdmin and the specified role does not match any of the user's roles
+        if (!$isSuperAdmin && !$RoleFunctionList->contains($RoleFunction)) {
+            return response()->json(["message"=>"User not authorised to perform this task"],400);
+        }
+    
+        }
+    
+    
+
+
+
     function PrepaidMeter($CompanyId){
         $c = CompanyToken::where('CompanyId', $CompanyId)->latest()->first();
 
@@ -200,10 +232,14 @@ class AuditTrialController extends Controller
 
 
 
-
-
-
     }
+
+
+
+
+
+
+
 
     function IdGenerator(): string {
         $randomID = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);

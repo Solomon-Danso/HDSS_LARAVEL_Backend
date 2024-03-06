@@ -414,9 +414,15 @@ class SetupController extends Controller
 
     function SystemRoles(){
         $c = [
-            "AddStudent",
-            "UpdateStudent",
-            "DeleteStudent",
+            "CreateRoles",
+            "DeleteRoles",
+            "AssignRolesToUsers",
+            "AddNewRolesToUsers",
+            "ViewUserRoles",
+            "DeleteUserRole",
+            
+
+
         ];
 
         return $c;
