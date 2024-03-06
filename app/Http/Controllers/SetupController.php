@@ -194,9 +194,7 @@ class SetupController extends Controller
 
 
             if (isset($h['CompanyLogo'])) {
-                $logoUrl = "http://".$req->Server.":".$req->Port."/storage/public/" . $h['CompanyLogo'];
-
-                // Define the path to store the logo in the public directory
+                $logoUrl = "http://".$req->Server.":".$req->Port."/storage/public/" . $h['CompanyLogo'];// Define the path to store the logo in the public directory
                 $storagePath = 'images/company_logo'; // Path relative to the 'public' folder
 
                 // Create the directory if it doesn't exist
@@ -410,6 +408,18 @@ class SetupController extends Controller
 
 
 
+
+    }
+
+
+    function SystemRoles(){
+        $c = [
+            "AddStudent",
+            "UpdateStudent",
+            "DeleteStudent",
+        ];
+
+        return $c;
 
     }
 
