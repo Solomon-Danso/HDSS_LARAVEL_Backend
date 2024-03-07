@@ -254,7 +254,7 @@ class Roles extends Controller
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteUserRole");
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "CreateUserSummaryRole");
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }
@@ -334,6 +334,69 @@ class Roles extends Controller
 
     }
 
+    function CreateRoleName(Request $req){
+     
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "CreateRoleName");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        $s = new RoleNames();
+
+        if($req->filled("Title")){
+            $s->Title = strtoupper($req->Title);
+        }
+
+        $checker  = RoleNames::where("Title",strtoupper($req->Title))->first();
+        if($checker){
+            return response()->json(["message"=>"Role already exist"],400);
+        }
+
+
+        $saver = $s->save();
+        if($saver){
+            return response()->json(["message"=>"Role name created successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"An error occured whiles creating Role"],400);
+ 
+        }
+
+
+    }
+
+    function DeleteRoleName(Request $req){
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteRoleName");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        $checker  = RoleNames::where("Title",strtoupper($req->Title))->first();
+        if($checker==null){
+            return response()->json(["message"=>"Role does not exist"],400);
+        }
+
+        $s = $checker->delete();
+
+        if($s){
+            return response()->json(["message"=>"Role deleted successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"An error occured whiles deleting the role"],400);
+        }
+
+
+    }
 
 
 

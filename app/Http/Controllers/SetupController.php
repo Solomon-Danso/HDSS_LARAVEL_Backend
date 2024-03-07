@@ -411,6 +411,31 @@ class SetupController extends Controller
 
     }
 
+function PermissionMgmt(){
+
+    $c = [
+        "CreateRoles",
+        "DeleteRoles",
+        "AssignRolesToUsers",
+        "AddNewRolesToUsers",
+        "ViewUserRoles",
+        "DeleteUserRole",
+        "DeleteUserSummaryRole",
+        "CreateRoleName",
+        "DeleteRoleName",
+        "CreateUserSummaryRole"
+        
+
+
+    ];
+
+    return $c;
+
+}
+
+
+
+
 
     function SystemRoles(){
         $c = [

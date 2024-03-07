@@ -80,6 +80,11 @@ Route::post("DeletePrimaryRole",[Roles::class,"DeletePrimaryRole"]);
 Route::post("CreateAnotherUserDetailedRole",[Roles::class,"CreateAnotherUserDetailedRole"]);
 Route::post("ViewUserDetailedRole",[Roles::class,"ViewUserDetailedRole"]);
 Route::post("DeleteUserDetailedRole",[Roles::class,"DeleteUserDetailedRole"]);
+Route::post("CreateUserSummaryRole",[Roles::class,"CreateUserSummaryRole"]);
+Route::post("DeleteUserSummaryRole",[Roles::class,"DeleteUserSummaryRole"]);
+
+Route::post("CreateRoleName",[Roles::class,"CreateRoleName"]);
+Route::post("DeleteRoleName",[Roles::class,"DeleteRoleName"]);
 
 
 
