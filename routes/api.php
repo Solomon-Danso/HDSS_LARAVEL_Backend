@@ -75,7 +75,7 @@ Route::delete("DeleteTeacher/{TeacherId}/{CompanyId}",[TeacherController::class,
 
 
 Route::post("CreatePrimaryRole",[Roles::class,"CreatePrimaryRole"]);
-Route::delete("DeletePrimaryRole",[Roles::class,"DeletePrimaryRole"]);
+Route::post("DeletePrimaryRole",[Roles::class,"DeletePrimaryRole"]);
 Route::post("CreateUserDetailedRole",[Roles::class,"CreateUserDetailedRole"]);
 Route::post("CreateAnotherUserDetailedRole",[Roles::class,"CreateAnotherUserDetailedRole"]);
 Route::post("ViewUserDetailedRole",[Roles::class,"ViewUserDetailedRole"]);

@@ -144,6 +144,16 @@ class Roles extends Controller
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }
+
+       
+        
+        if($req->RoleFunction==="SuperAdmin"){
+            $checker = UserDetailedRole::where("RoleFunction",$req->RoleFunction)->first();
+            if($checker){
+                return response()->json(["message"=>"SuperAdmin already assigned to a user"],400);
+            }
+                
+        }
         
         $s = new UserDetailedRole();
         if($req->filled("UserId")){
@@ -205,6 +215,12 @@ class Roles extends Controller
 
 
         $s = UserDetailedRole::where("id",$req->id)->first();
+
+        if($s->RoleFunction==="SuperAdmin"){
+            return response()->json(["message"=>"You cannot delete a SuperAdmin account"],400);
+        }
+
+
         if($s !== null){
             $saver = $s->delete();
             if($saver){
