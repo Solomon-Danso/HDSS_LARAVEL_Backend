@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teachers', function (Blueprint $table) {
+        Schema::create('staff_members', function (Blueprint $table) {
             $table->id();
             $table->longText("CompanyId")->nullable();
+            $table->longText("StaffId")->nullable();
             $table->longText("Title")->nullable();
             $table->longText("FirstName ")->nullable();
             $table->longText("OtherName")->nullable();
@@ -35,7 +36,7 @@ return new class extends Migration
             $table->longText("EmergencyPhone1")->nullable();
             $table->longText("EmergencyPhone2")->nullable();
             $table->longText("ProfilePic")->nullable();
-            $table->longText("TeacherId")->nullable();
+            $table->longText("PrimaryRole")->nullable();
             $table->longText("Cert1")->nullable();
             $table->longText("Cert2")->nullable();
             $table->longText("IdCards")->nullable();
@@ -49,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('teachers');
+        Schema::dropIfExists('staff_members');
     }
 };

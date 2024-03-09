@@ -8,7 +8,7 @@ use App\Models\RoleNames;
 use App\Models\UserDetailedRole;
 use App\Models\UserSummarisedRole;
 use App\Http\Controllers\AuditTrialController;
-
+use App\Models\StaffMembers;
 
 
 class Roles extends Controller
@@ -84,17 +84,15 @@ class Roles extends Controller
             return $UserRole;
         }
        
-        $s = PrimaryRole::where("id",$req->id)->first();
-        if($s !== null){
-            $saver = $s->delete();
-            if($saver){
-                return response()->json(["message"=>"Deleted Successfully"],200);
-            }
-            else{
-                return response()->json(["message"=>"Deletion was not successful"],400);
-            }
+        $RoleList = PrimaryRole::where("RoleName",$req->RoleName)->get();
 
+        foreach($RoleList as $Role) {
+            $saver = $Role->delete();
+           
         }
+
+        return response()->json(["message"=>"User deleted successfully"],200);
+        
         
     }
 
@@ -118,7 +116,7 @@ class Roles extends Controller
             return response()->json(["message" => "No role function found for this role"], 400);
         }
 
-        foreach($RoleFunction as $PrimaryRoleList){
+        foreach($PrimaryRoleList as $RoleFunction ){
             $s = new UserDetailedRole();
             $s->UserId = $UserId;
             $s->RoleFunction = $RoleFunction;
@@ -220,7 +218,7 @@ class Roles extends Controller
         }
 
 
-        $s = UserDetailedRole::where("id",$req->id)->first();
+        $s = UserDetailedRole::where("id",$req->id)->where("UserId",$req->UserId)->first();
 
         if($s==null){
             return response()->json(["message"=>"User Roles Does not exist"],400);
@@ -245,6 +243,38 @@ class Roles extends Controller
         
     }
 
+
+
+    function DeleteDetailedRoleForUser($CompanyId, $SenderId, $UserId){
+       
+        $response = $this->audit->PrepaidMeter($CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "DeleteRoles");
+
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+       
+        $RoleList = UserDetailedRole::where("UserId",$UserId)->get();
+
+        foreach($RoleList as $Role) {
+            $saver = $Role->delete();
+           
+        }
+
+        return response()->json(["message"=>"User deleted successfully"],200);
+        
+        
+    }
+
+
+
+
+
     function CreateUserSummaryRole(Request $req){
 
         $s = new UserSummarisedRole;
@@ -266,12 +296,18 @@ class Roles extends Controller
         if($req->filled("RoleName")){
             $s->RoleName = $req->RoleName;
         }
+
+
+
+
+
+
         $UserS = UserSummarisedRole::where("UserId", $req->UserId)->first();
         if($UserS){
             return response()->json(["message"=>"User already has an assigned role, consider deleting the existing role or edit the user role"],400);
         }
 
-      $UserDetails = CreateUserDetailedRole($req->CompanyId, $req->SenderId, $s->UserId, $s->RoleName);
+      $UserDetails = $this->CreateUserDetailedRole($req->CompanyId, $req->SenderId, $s->UserId, $s->RoleName);
       if ($UserDetails !== null && $UserDetails->getStatusCode() !== 200) {
        return $UserDetails;
     }
@@ -286,6 +322,53 @@ class Roles extends Controller
         
 
     }
+
+
+
+    function CreateUserSummaryRoleOnRegistration($CompanyId, $SenderId, $UserId, $RoleName ){
+
+        $s = new UserSummarisedRole;
+
+        $response = $this->audit->PrepaidMeter($CompanyId);
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "CreateUserSummaryRoleOnRegistration");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+       
+            $s->UserId = $UserId;
+        
+
+    
+            $s->RoleName = $RoleName;
+        
+        $UserS = UserSummarisedRole::where("UserId", $UserId)->first();
+        if($UserS){
+            return response()->json(["message"=>"User already has an assigned role, consider deleting the existing role or edit the user role"],400);
+        }
+
+      $UserDetails = $this->CreateUserDetailedRole($CompanyId, $SenderId, $s->UserId, $s->RoleName);
+      if ($UserDetails !== null && $UserDetails->getStatusCode() !== 200) {
+       return $UserDetails;
+    }
+
+    $saver = $s->save();
+    if ($saver){
+        return response()->json(["message"=>"User assigned to role successfully"],200);
+    }
+    else{
+        return response()->json(["message"=>"An error occured whiles assigning this role to the user "],400);
+    }
+        
+
+    }
+
+
+
 
 
     function DeleteUserSummaryRole(Request $req){

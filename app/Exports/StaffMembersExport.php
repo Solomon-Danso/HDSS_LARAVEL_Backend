@@ -2,34 +2,34 @@
 
 namespace App\Exports;
 
-use App\Models\teacher;
+use App\Models\StaffMembers;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\Schema;
 
-class TeachersExport implements FromCollection, WithHeadings
+class StaffMemberssExport implements FromCollection, WithHeadings
 {
-    protected $teachers;
+    protected $StaffMemberss;
 
-    public function __construct($teachers)
+    public function __construct($StaffMemberss)
     {
-        $this->teachers = $teachers;
+        $this->StaffMemberss = $StaffMemberss;
     }
 
     public function collection()
     {
         // Exclude 'id' column from each row
-        $filteredteachers = $this->teachers->map(function ($teacher) {
-            return collect($teacher)->except(['id'])->all();
+        $filteredStaffMemberss = $this->StaffMemberss->map(function ($StaffMembers) {
+            return collect($StaffMembers)->except(['id'])->all();
         });
 
-        return $filteredteachers;
+        return $filteredStaffMemberss;
     }
 
     public function headings(): array
     {
         // Get column names dynamically from the database
-        $columns = Schema::getColumnListing('teachers'); // Adjust the table name as needed
+        $columns = Schema::getColumnListing('staff_members'); // Adjust the table name as needed
 
         // Exclude the 'id' column
         $columns = array_diff($columns, ['id']);

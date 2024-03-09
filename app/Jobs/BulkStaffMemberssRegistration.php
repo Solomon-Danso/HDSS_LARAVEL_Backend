@@ -1,10 +1,10 @@
 <?php
 
-// App/Jobs/ProcessBulkTeacherRegistration.php
+// App/Jobs/ProcessBulkStaffMembersRegistration.php
 
 namespace App\Jobs;
 
-use App\Models\Teacher;
+use App\Models\StaffMembers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Facades\Excel;
 
 
-class BulkTeachersRegistration implements ShouldQueue
+class BulkStaffMemberssRegistration implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,12 +36,12 @@ class BulkTeachersRegistration implements ShouldQueue
             for ($i = 1; $i < count($rows[0]); $i++) {
                 $row = $rows[0][$i];
     
-                $s = new Teacher();
+                $s = new StaffMembers();
     
                 // Assign values based on headers
                 $s->CompanyId = $this->CompanyId;
                 $s->save();
-                $s->TeacherId = strval(10000 + $s->id);
+                $s->StaffId = strval(10000 + $s->id);
     
                 foreach ($headers as $index => $header) {
                     $s->{$header} = $row[$index];
