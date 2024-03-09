@@ -387,7 +387,7 @@ class SetupController extends Controller
 
             $saver = $s->save();
             if($saver){
-                return response()->json(["message" => $s->CompanyName." Setup Completed"],200);
+                return response()->json(["message" => $s->CompanyName." Subscription Completed"],200);
             }
 
             return response()->json(['message' => 'An error occoured, please ensure you are connected to the internet'],400);
@@ -533,7 +533,7 @@ function SuperAdminRegistration( $CompanyId,$Email,$FirstName,$PhoneNumber,$Prof
 
       
         $UserName = $t->FirstName;
-        $Password =  $this->audit->IdGenerator();
+        $Password =  $s->UserId;
       
         $this->audit->Authenticator(
             $t->StaffId,
