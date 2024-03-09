@@ -15,6 +15,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserDetailedRole;
+use App\Models\StaffMembers;
 
 class AuditTrialController extends Controller
 {
@@ -74,7 +75,7 @@ class AuditTrialController extends Controller
         $auditTrail->save();
     }
 
-    function TeacherAudit($TeacherId,$CompanyId,$Action) {
+    function StaffMemberAudit($StaffId,$CompanyId,$Action) {
         $ipAddress = $_SERVER['REMOTE_ADDR']; // Get user's IP address
     
         try{
@@ -94,9 +95,9 @@ class AuditTrialController extends Controller
         $device = $this->detectDevice($userAgent);
         $os =  $this->detectOperatingSystem($userAgent);
     
-        $stu = Teacher::where('TeacherId', $TeacherId)->where("CompanyId", $CompanyId)->first();
+        $stu = StaffMembers::where('StaffId', $StaffId)->where("CompanyId", $CompanyId)->first();
         if($stu==null){
-            return response()->json(["message"=>"Teacher does not exist"],400);
+            return response()->json(["message"=>"Staff does not exist"],400);
         }
       
     
@@ -117,7 +118,7 @@ class AuditTrialController extends Controller
         $auditTrail->urlPath = $urlPath??" ";
         $auditTrail->action = $Action??" "; 
         $auditTrail->googlemap = $googleMapsLink??" ";
-        $auditTrail -> userId = $stu->TeacherId??" ";
+        $auditTrail -> userId = $stu->StaffId??" ";
         $auditTrail -> userName = $stu->FirstName." ".$stu->OtherName." ".$stu->LastName??" ";
         $auditTrail -> userPic = $stu->ProfilePic??" ";
         $auditTrail -> companyId = $stu->CompanyId??" ";
@@ -125,56 +126,7 @@ class AuditTrialController extends Controller
         $auditTrail->save();
     }
 
-    function AdminAudit($AdminId,$CompanyId,$Action) {
-        $ipAddress = $_SERVER['REMOTE_ADDR']; // Get user's IP address
-    
-        try{
-        $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$ipAddress}/json"));
-    
-        $country = $ipDetails->country ?? 'Unknown';
-        $city = $ipDetails->city ?? 'Unknown';
-        $latitude = $ipDetails->loc ?? ''; // Latitude
-    
-        }catch(\Exception $e){
-            $country = $city = $latitude = null;
-        }
-        // Get user agent information
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-    
-        // Parse the user agent string to determine device and OS
-        $device = $this->detectDevice($userAgent);
-        $os =  $this->detectOperatingSystem($userAgent);
-    
-        $stu = Admin::where('AdminId', $AdminId)->where("CompanyId", $CompanyId)->first();
-        if($stu==null){
-            return response()->json(["message"=>"Admin does not exist"],400);
-        }
-    
-        // URL path
-        $urlPath = $_SERVER['REQUEST_URI'];
-    
-       
-        $googleMapsLink = "https://maps.google.com/?q={$latitude}";
-    
-        // Create a new AuditTrail instance and save the log to the database
-       
-        $auditTrail = new AuditTrail();
-        $auditTrail->ipAddress = $ipAddress??" ";
-        $auditTrail->country = $country??" ";
-        $auditTrail->city = $city??" ";
-        $auditTrail->device = $device??" ";
-        $auditTrail->os = $os??" ";
-        $auditTrail->urlPath = $urlPath??" ";
-        $auditTrail->action = $Action??" "; 
-        $auditTrail->googlemap = $googleMapsLink??" ";
-        $auditTrail -> userId = $stu->AdminId??" ";
-        $auditTrail -> userName = $stu->FirstName." ".$stu->OtherName." ".$stu->LastName??" ";
-        $auditTrail -> userPic = $stu->ProfilePic??" ";
-        $auditTrail -> companyId = $stu->CompanyId??" ";
-
-        $auditTrail->save();
-    }
-
+ 
 
     function RoleAuthenticator($SenderId, $RoleFunction){
 
@@ -290,7 +242,7 @@ class AuditTrialController extends Controller
         $s-> ProfilePic = $ProfilePic;
         $s->Role = $Role;
         $s->UserName = $UserName;
-        $s->RawPassword = $Password;
+         $s->IsPasswordReset = true;
         $s->CompanyId = $CompanyId;
         $s->Password = bcrypt($Password);
 

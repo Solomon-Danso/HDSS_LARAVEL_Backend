@@ -45,12 +45,14 @@ Route::get("generatePDF",[AuditTrialController::class,"generatePDF"]);
 
 
 
-Route::post("Setup",[SetupController::class,"Setup"]);
+Route::post("SoftwareRegistration",[SetupController::class,"SoftwareRegistration"]);
+Route::post("SubscriptionManagement",[SetupController::class,"SubscriptionManagement"]);
+
 Route::post("LocalSetup",[SetupController::class,"LocalSetup"]);
-Route::post("CompanyToken",[SetupController::class,"CompanyToken"]);
 Route::post("LocalCompanyToken",[SetupController::class,"LocalCompanyToken"]);
 Route::get("SystemRoles",[SetupController::class,"SystemRoles"]);
 Route::get("PermissionMgmt",[SetupController::class,"PermissionMgmt"]);
+Route::get("RegistrationMgmt",[SetupController::class,"RegistrationMgmt"]);
 
 
 

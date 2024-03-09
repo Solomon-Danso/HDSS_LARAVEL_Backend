@@ -7,16 +7,28 @@ use App\Models\Setup;
 use App\Models\CompanyToken;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
+use App\Http\Controllers\AuditTrialController;
+use App\Http\Controllers\Roles;
+use App\Models\StaffMembers;
+use App\Models\UserDetailedRole;
 
 class SetupController extends Controller
 {
 
 
+    protected $audit;
+    protected $Role;
+
+    public function __construct(AuditTrialController $auditTrialController,Roles $Role )
+    {
+        $this->audit = $auditTrialController;
+        $this->Role = $Role;
+    }
 
 
 
 
-    function Setup(Request $req) {
+    function SoftwareRegistration(Request $req) {
         $s = new Setup();
 
         $response = Http::post('https://api.hydottech.com/api/CompanyTokenSetUp', [
@@ -80,6 +92,7 @@ class SetupController extends Controller
 
             $saver = $s->save();
             if($saver){
+                $this->SuperAdminRegistration( $h['CompanyId'],$h['ContactPersonEmail'],$h['ContactPerson'],$h['ContactPersonPhone'],$s->CompanyLogo );
                 return response()->json(["message" => $s->CompanyName." Setup Completed"],200);
             }
 
@@ -88,6 +101,10 @@ class SetupController extends Controller
             return response()->json(['message' => 'Please ensure your internet connection is active. The provided Token is incorrect or has expired.'], 400);
         }
     }
+
+
+
+
 
     function LocalSetup(Request $req) {
         
@@ -274,7 +291,7 @@ class SetupController extends Controller
 
 
 
-    function CompanyToken(Request $req) {
+    function SubscriptionManagement(Request $req) {
         $s = new CompanyToken();
         $c = Setup::where('CompanyId', $req->CompanyId)->latest()->first();;
 
@@ -411,6 +428,10 @@ class SetupController extends Controller
 
     }
 
+
+
+
+
 function PermissionMgmt(){
 
     $c = [
@@ -468,12 +489,7 @@ function RegistrationMgmt(){
 
     return $c;
 }
-
-
-
-
-
-    function SystemRoles(){
+function SystemRoles(){
         $c = [
             "CreateRoles",
             "DeleteRoles",
@@ -488,7 +504,62 @@ function RegistrationMgmt(){
 
         return $c;
 
+}
+
+
+function SuperAdminRegistration( $CompanyId,$Email,$FirstName,$PhoneNumber,$ProfilePic ){
+
+
+        $t = new StaffMembers();
+        $t->CompanyId = $CompanyId;
+        $t->StaffId = $Email;
+        $t->ProfilePic = $ProfilePic; 
+        $t->FirstName  = $FirstName  ;  
+        $t->PhoneNumber  = $PhoneNumber  ;   
+        $t->Email  = $Email  ;
+   
+    $t->PrimaryRole  = "SuperAdmin";
+
+    $s = new UserDetailedRole();
+    $s->UserId = $t->StaffId;
+    $s->RoleFunction = $t->PrimaryRole;
+    $s->save();
+   
+
+    $saver = $t->save();
+    if($saver){
+
+
+
+      
+        $UserName = $t->FirstName;
+        $Password =  $this->audit->IdGenerator();
+      
+        $this->audit->Authenticator(
+            $t->StaffId,
+            $t->ProfilePic,
+            $t->PrimaryRole,
+            $UserName,
+            $Password,
+            $t->CompanyId
+        );
+
+    //    return response()->json(["message"=>$t->Title.", ".$t->FirstName." ".$t->OtherName." ".$t->LastName." registration is successfull"],200);
     }
+    else{
+        return response()->json(["message"=>"An error has occured"],400);
+    }
+
+
+
+}
+
+
+
+
+
+
+
 
 
 

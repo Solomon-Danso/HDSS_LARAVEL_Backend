@@ -59,6 +59,8 @@ class Roles extends Controller
 
         $checker = $s->save();
         if($checker){
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Create Roles");
+
             return response()->json(["message"=>"Role created successfully"],200);
         }
         else{
@@ -90,6 +92,7 @@ class Roles extends Controller
             $saver = $Role->delete();
            
         }
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete Roles");
 
         return response()->json(["message"=>"User deleted successfully"],200);
         
@@ -128,6 +131,9 @@ class Roles extends Controller
                 return response()->json(["message"=>"Couldnot assign ".$RoleFunction." to this user"],400);
             }
         }
+
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Assign Roles To Users");
+
 
         return response()->json(["message"=>"User Assigned To Role Successfully"],200);
 
@@ -170,6 +176,8 @@ class Roles extends Controller
 
         $saver = $s->save();
         if ($saver){
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Add New Roles To Users");
+
             return response()->json(["message"=>$s->RoleFunction." assigned to this user"],200);
         }
         else{
@@ -200,6 +208,8 @@ class Roles extends Controller
 
 
         $RoleFunctionList = UserDetailedRole::where("UserId",$req->UserId)->get();
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"View User Roles");
+
 
         return response()->json(["message"=>$RoleFunctionList],200);
     }
@@ -234,6 +244,8 @@ class Roles extends Controller
         
             $saver = $s->delete();
             if($saver){
+                $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete User Role");
+
                 return response()->json(["message"=>"Deleted Successfully"],200);
             }
             else{
@@ -265,6 +277,7 @@ class Roles extends Controller
             $saver = $Role->delete();
            
         }
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete Roles");
 
         return response()->json(["message"=>"User deleted successfully"],200);
         
@@ -314,6 +327,8 @@ class Roles extends Controller
 
     $saver = $s->save();
     if ($saver){
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Create User Summary Role");
+
         return response()->json(["message"=>"User assigned to role successfully"],200);
     }
     else{
@@ -358,6 +373,8 @@ class Roles extends Controller
 
     $saver = $s->save();
     if ($saver){
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Create User Summary Role On Registration");
+
         return response()->json(["message"=>"User assigned to role successfully"],200);
     }
     else{
@@ -409,6 +426,8 @@ class Roles extends Controller
     
         // Optionally, you can delete the UserS record as well after deleting related UserD records
         $UserS->delete();
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete User Summary Role");
+
     
         return response()->json(["message" => "User roles deleted successfully"], 200);
 
@@ -443,6 +462,8 @@ class Roles extends Controller
 
         $saver = $s->save();
         if($saver){
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Create Role Name");
+
             return response()->json(["message"=>"Role name created successfully"],200);
         }
         else{
@@ -472,6 +493,8 @@ class Roles extends Controller
         $s = $checker->delete();
 
         if($s){
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete Role Name");
+
             return response()->json(["message"=>"Role deleted successfully"],200);
         }
         else{

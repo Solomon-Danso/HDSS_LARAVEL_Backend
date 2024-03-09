@@ -38,16 +38,6 @@ class Authenticates extends Controller
             $user->IpAddress = $_SERVER['REMOTE_ADDR'];
             $user->LastLogin = Carbon::now();
 
-            try{
-                $ipDetails = json_decode(file_get_contents("https://ipinfo.io/{$user->IpAddress}/json"));
-        
-            $user->Country = $ipDetails->country ?? 'Unknown';
-            $user->City = $ipDetails->city ?? 'Unknown';
-            
-            }catch(\Exception $e){
-                $user->Country = $user->City =  null;
-            }
-
             $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
             $user->DeviceType = $this->detectDevice($userAgent);
@@ -55,20 +45,23 @@ class Authenticates extends Controller
 
             $user->LoginAttempt = 0;
             $user->IsBlocked = false;
-            $user->IsLoggedIn = true;
             $user->SessionID = $this->audit->IdGenerator();
             $user-> Status = "Online";
-            $user->expirationTime = now()->addSeconds(40);
-
+           
 
             $c = [
-                "FullName" => $user->FullName,
+                "FullName" => $user->UserName,
                 "UserId" => $user->UserId,
                 "profilePic" => $user->profilePic,
-                "IsPasswordReset"=>$user->IsPasswordReset,
                 "CompanyId"=>$user->CompanyId,
                 "SessionID"=>$user->SessionID,
                 "PrimaryRole"=>$user->Role,
+                "IpAddress" =>$user->IpAddress,
+                "LoginTime" =>  $user->LastLogin,
+                "Device" =>$user->DeviceType,
+                "Operating System"=> $user->OS,
+                "PasswordReset"=> $user->IsPasswordReset,
+
 
                 
             ];
@@ -119,7 +112,7 @@ class Authenticates extends Controller
                 $this->audit->Notify(
                     $user->UserId,
                     "Security Team",
-                    "Unauthorised Login",
+                    "Account Blocked",
                     "Security",
                     $content,
                     $user->CompanyId
@@ -158,7 +151,7 @@ class Authenticates extends Controller
             $this->audit->Notify(
                 $user->UserId,
                 "Security Team",
-                "Unauthorised Login",
+                "Unauthorised Login for ". $user->LoginAttempt." attempt",
                 "Security",
                 $content,
                 $user->CompanyId
@@ -197,7 +190,7 @@ class Authenticates extends Controller
 
         $worked = true;
 
-        return response->json(["message"=> $worked],200);
+        return response()->json(["message"=> $worked],200);
 
     }
 
