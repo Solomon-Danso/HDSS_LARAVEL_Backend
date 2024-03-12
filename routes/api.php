@@ -53,7 +53,7 @@ Route::post("LocalCompanyToken",[SetupController::class,"LocalCompanyToken"]);
 Route::get("SystemRoles",[SetupController::class,"SystemRoles"]);
 Route::get("PermissionMgmt",[SetupController::class,"PermissionMgmt"]);
 Route::get("RegistrationMgmt",[SetupController::class,"RegistrationMgmt"]);
-
+Route::get("ViewSchoolData",[SetupController::class,"ViewSchoolData"]);
 
 
 

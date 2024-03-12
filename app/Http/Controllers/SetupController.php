@@ -102,6 +102,10 @@ class SetupController extends Controller
         }
     }
 
+    function ViewSchoolData(){
+        $s = Setup::first();
+        return $s;
+    }
 
 
 

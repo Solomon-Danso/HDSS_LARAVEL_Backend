@@ -200,18 +200,12 @@ class Roles extends Controller
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "ViewUserRoles");
 
-        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
-            return $UserRole;
-        }
-
-
-        $RoleFunctionList = UserDetailedRole::where("UserId",$req->UserId)->get();
+        $RoleFunctionList = UserDetailedRole::where("UserId",$req->UserId)->pluck("RoleFunction");
         $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"View User Roles");
 
 
-        return response()->json(["message"=>$RoleFunctionList],200);
+        return $RoleFunctionList;
     }
 
     function DeleteUserDetailedRole(Request $req){
