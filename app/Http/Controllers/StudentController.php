@@ -13,6 +13,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
 use App\Exports\AuthenticExport;
 use App\Http\Controllers\Roles;
+use PDF;
+use Illuminate\Support\Facades\Storage;
+
+
 
 class StudentController extends Controller
 {
@@ -210,8 +214,17 @@ class StudentController extends Controller
             $Password,
             $s->CompanyId
         );
-       
-        return response()->json(["message" => "Student Admitted Successfully"],200);
+
+
+        $ProfilePic = $s->ProfilePic; // Get the URL for the profile picture
+
+        $pdf = PDF::loadView('myPDF', compact('UserName', 'Password', 'ProfilePic'));
+
+        return $pdf->download('itsolutionstuff.pdf');
+   
+    
+
+       // return response()->json(["message" => "Student Enrolled Successfully "],200);
        }
        else{
         return response()->json(["message" => "Student Admission Failed"],400);
