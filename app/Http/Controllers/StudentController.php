@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Authentic;
+use App\Models\Setup;
+use App\Models\StaffMembers;
 use App\Http\Controllers\AuditTrialController;
 
 use App\Jobs\ProcessBulkStudentRegistration;
@@ -205,6 +207,7 @@ class StudentController extends Controller
         
         $UserName = $s->FirstName." ".$s->OtherName." ".$s->LastName;
         $Password =  $this->audit->IdGenerator();
+        $TheUserId =  $s->StudentId;
       
         $this->audit->Authenticator(
             $s->StudentId,
@@ -215,12 +218,36 @@ class StudentController extends Controller
             $s->CompanyId
         );
 
+        $cmp = Setup::where("CompanyId", $s->CompanyId)->first();
+        if($cmp==null){
+            return response()->json(["message"=>"No company found"],400);
+        }
+
+        $snd = StaffMembers::where("StaffId", $req->SenderId)->first();
+        if($snd==null){
+            return response()->json(["message"=>"No company found"],400);
+        }
+
+        $CompanyName = $cmp->CompanyName;
+        $CompanyLogo = $cmp->CompanyLogo ;
+        $Location = $cmp->Location ;
+
+             $SenderPosition = $snd->PrimaryRole;
+
+    
+
+            $TheSenderName = $snd->FirstName." ".$snd->OtherName." ".$snd->LastName;
+
+        
+
+
 
         $ProfilePic = $s->ProfilePic; // Get the URL for the profile picture
+        $currentDate = date("F j, Y", strtotime("now"));
 
-        $pdf = PDF::loadView('myPDF', compact('UserName', 'Password', 'ProfilePic'));
+        $pdf = PDF::loadView('AdmissionLetter', compact('Password','TheUserId','SenderPosition','TheSenderName','Location','CompanyLogo','CompanyName','UserName', 'Password', 'ProfilePic','currentDate'));
 
-        return $pdf->download('itsolutionstuff.pdf');
+        return $pdf->download( $UserName.'.pdf');
    
     
 

@@ -43,7 +43,7 @@ class SetupController extends Controller
                 $logoUrl = "https://api.hydottech.com/storage/public/" . $h['CompanyLogo'];
 
                 // Define the path to store the logo in the public directory
-                $storagePath = 'images/company_logo'; // Path relative to the 'public' folder
+                $storagePath = 'storage'; // Path relative to the 'public' folder
 
                 // Create the directory if it doesn't exist
                 if (!file_exists(public_path($storagePath))) {
