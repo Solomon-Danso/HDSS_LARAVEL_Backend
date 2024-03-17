@@ -63,7 +63,7 @@ class Authenticates extends Controller
                 "Device" =>$user->DeviceType,
                 "Operating System"=> $user->OS,
                 "PasswordReset"=> $user->IsPasswordReset,
-                "Roles"=>$RoleFunctionList,
+                "AccountType"=>$user->AccountType,
 
 
                 

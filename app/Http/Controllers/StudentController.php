@@ -197,10 +197,11 @@ class StudentController extends Controller
         }
 
        
-            $s->Role = "Student" ;
+        $req->AccountType = "Student";
         
 
-       $saver = $s->save();
+       
+            $saver = $s->save();
 
        if($saver){
         $this->audit->StudentAudit($s->StudentId, $s->CompanyId, "Registered A Student");
@@ -215,7 +216,8 @@ class StudentController extends Controller
             "Student",
             $UserName,
             $Password,
-            $s->CompanyId
+            $s->CompanyId,
+            "Student",
         );
 
         $cmp = Setup::where("CompanyId", $s->CompanyId)->first();
@@ -239,9 +241,6 @@ class StudentController extends Controller
             $TheSenderName = $snd->FirstName." ".$snd->OtherName." ".$snd->LastName;
 
         
-
-
-
         $ProfilePic = $s->ProfilePic; // Get the URL for the profile picture
         $currentDate = date("F j, Y", strtotime("now"));
 
@@ -249,9 +248,7 @@ class StudentController extends Controller
 
         return $pdf->download( $UserName.'.pdf');
    
-    
 
-       // return response()->json(["message" => "Student Enrolled Successfully "],200);
        }
        else{
         return response()->json(["message" => "Student Admission Failed"],400);
@@ -493,14 +490,14 @@ class StudentController extends Controller
 
     }
 
-    function GetStudent($StudentId, $CompanyId){
+    function GetStudent($StudentId, $CompanyId,$SenderId){
         $response = $this->audit->PrepaidMeter($CompanyId);
 
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "ViewStudent");
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "ViewStudent");
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }
@@ -555,14 +552,14 @@ class StudentController extends Controller
     }
     
 
-    function DeleteStudent($StudentId, $CompanyId){
+    function DeleteStudent($StudentId, $CompanyId,$SenderId){
         $response = $this->audit->PrepaidMeter($CompanyId);
 
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteStudent");
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "DeleteStudent");
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }

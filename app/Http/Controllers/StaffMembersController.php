@@ -160,6 +160,9 @@ class StaffMembersController extends Controller
             $t->PrimaryRole  = $req ->PrimaryRole;
         }
 
+        $req->AccountType = "StaffMember";
+
+
         $this->Role->CreateUserSummaryRoleOnRegistration($req->CompanyId, $req->SenderId, $t->StaffId, $t->PrimaryRole );
         
        
@@ -180,7 +183,8 @@ class StaffMembersController extends Controller
                 $t->PrimaryRole,
                 $UserName,
                 $Password,
-                $t->CompanyId
+                $t->CompanyId,
+                "StaffMember",
             );
 
             $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Register Staff Members");

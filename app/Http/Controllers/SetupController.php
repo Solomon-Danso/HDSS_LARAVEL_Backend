@@ -449,7 +449,17 @@ function PermissionMgmt(){
         "CreateRoleName",
         "DeleteRoleName",
         "CreateUserSummaryRole",
-        "CreateUserSummaryRoleOnRegistration"
+        "CreateUserSummaryRoleOnRegistration",
+        "AddStudentToTransportList",
+        "EditStudentInTransportList",
+        "GetAllTransportUsers",
+        "DeleteStudentInTransportList",
+        "StudentToPickupList",
+        "Pickup",
+        "StudentToDepartureList",
+        "Departure",
+        "StudentToDestinationArrival",
+        "DestinationArrival"
         
 
 
@@ -493,6 +503,7 @@ function RegistrationMgmt(){
 
     return $c;
 }
+
 function SystemRoles(){
         $c = [
             "CreateRoles",
@@ -523,6 +534,7 @@ function SuperAdminRegistration( $CompanyId,$Email,$FirstName,$PhoneNumber,$Prof
         $t->Email  = $Email  ;
    
     $t->PrimaryRole  = "SuperAdmin";
+    $t->AccountType = "StaffMember";
 
     $s = new UserDetailedRole();
     $s->UserId = $t->StaffId;
@@ -545,7 +557,8 @@ function SuperAdminRegistration( $CompanyId,$Email,$FirstName,$PhoneNumber,$Prof
             $t->PrimaryRole,
             $UserName,
             $Password,
-            $t->CompanyId
+            $t->CompanyId,
+            $t->AccountType
         );
 
     //    return response()->json(["message"=>$t->Title.", ".$t->FirstName." ".$t->OtherName." ".$t->LastName." registration is successfull"],200);
