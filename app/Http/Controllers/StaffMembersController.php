@@ -396,7 +396,7 @@ class StaffMembersController extends Controller
 
         $saver = $t->delete();
         if($saver){
-            $this->Role->DeleteDetailedRoleForUser($req->CompanyId, $req->SenderId, $StaffId);
+            $this->Role->DeleteDetailedRoleForUser($CompanyId, $SenderId, $StaffId);
             
             $a = Authentic::where("UserId", $StaffId)->where("CompanyId", $CompanyId)->first();
          if($a==null){
@@ -405,7 +405,7 @@ class StaffMembersController extends Controller
 
             $a->delete();
 
-            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete Staff Members");
+            $this->audit->StaffMemberAudit($SenderId,$CompanyId,"Delete Staff Members");
 
             
             
@@ -434,8 +434,13 @@ class StaffMembersController extends Controller
         }
     
         $StaffMemberss = StaffMembers::where("CompanyId", $req->CompanyId)
+        ->where("PrimaryRole", "!=", "SuperAdmin")
+        ->orwhereNull("PrimaryRole")
         ->orderBy('LastName')
-        ->get()->toArray();
+        ->get()
+        ->toArray();
+    
+
         $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"View Staff Members In School");
 
         return $StaffMemberss;

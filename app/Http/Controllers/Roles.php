@@ -272,7 +272,7 @@ class Roles extends Controller
             $saver = $Role->delete();
            
         }
-        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Delete Roles");
+        $this->audit->StaffMemberAudit($SenderId,$CompanyId,"Delete Roles");
 
         return response()->json(["message"=>"User deleted successfully"],200);
         
