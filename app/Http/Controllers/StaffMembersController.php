@@ -67,9 +67,7 @@ class StaffMembersController extends Controller
             $t->Cert1 = $req->file("Cert1")->store("","public");
         }
 
-        if($req->hasFile("Cert2")){
-            $t->Cert2 = $req->file("Cert2")->store("","public");
-        }
+        
 
         if($req->hasFile("IdCards")){
             $t->IdCards = $req->file("IdCards")->store("","public");
@@ -100,9 +98,6 @@ class StaffMembersController extends Controller
             $t->Gender  = $req ->Gender  ;
         }
 
-        if($req->filled("HomeTown")){
-            $t->HomeTown  = $req ->HomeTown  ;
-        }
 
         if($req->filled("Location")){
             $t->Location  = $req ->Location  ;
@@ -160,7 +155,7 @@ class StaffMembersController extends Controller
             $t->PrimaryRole  = $req ->PrimaryRole;
         }
 
-        $req->AccountType = "StaffMember";
+        $t->AccountType = "StaffMember";
 
 
         $this->Role->CreateUserSummaryRoleOnRegistration($req->CompanyId, $req->SenderId, $t->StaffId, $t->PrimaryRole );
@@ -195,18 +190,18 @@ class StaffMembersController extends Controller
     
             $snd = StaffMembers::where("StaffId", $req->SenderId)->first();
             if($snd==null){
-                return response()->json(["message"=>"No company found"],400);
+                return response()->json(["message"=>"Sender does not exist"],400);
             }
     
             $CompanyName = $cmp->CompanyName;
             $CompanyLogo = $cmp->CompanyLogo ;
             $Location = $cmp->Location ;
     
-                 $SenderPosition = $snd->PrimaryRole;
+            $SenderPosition = $snd->PrimaryRole;
     
         
     
-                $TheSenderName = $snd->FirstName." ".$snd->OtherName." ".$snd->LastName;
+            $TheSenderName = $snd->FirstName." ".$snd->OtherName." ".$snd->LastName;
     
             
     
@@ -359,14 +354,14 @@ class StaffMembersController extends Controller
 
     }
 
-    function ViewStaffMembers($StaffId,$CompanyId){
+    function ViewStaffMembers($StaffId,$CompanyId,$SenderId){
         $response = $this->audit->PrepaidMeter($CompanyId);
 
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "ViewStaffMembers");
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "ViewStaffMembers");
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }
@@ -375,19 +370,19 @@ class StaffMembersController extends Controller
         if($t==null){
             return response()->json(["message"=>"StaffMembers not found"],400);
         }
-        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"View Staff Members");
+        $this->audit->StaffMemberAudit($SenderId,$CompanyId,"View Staff Members");
 
         return $t;
     }
 
-    function DeleteStaffMembers($StaffId,$CompanyId){
+    function DeleteStaffMembers($StaffId,$CompanyId,$SenderId){
         $response = $this->audit->PrepaidMeter($CompanyId);
 
         if ($response !== null && $response->getStatusCode() !== 200) {
             return $response;
         }
 
-        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteStaffMembers");
+        $UserRole = $this->audit->RoleAuthenticator($SenderId, "DeleteStaffMembers");
         if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
             return $UserRole;
         }

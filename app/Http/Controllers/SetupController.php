@@ -61,7 +61,7 @@ class SetupController extends Controller
                     file_put_contents($downloadedFilePath, $response->getBody());
 
                     // Update the CompanyLogo field in the Setup model with the path relative to the 'public' folder
-                    $s->CompanyLogo = $storagePath . '/' . $filename;
+                    $s->CompanyLogo = $filename;
                 } else {
                     // Handle unsuccessful image download
                     return response()->json(['message' => 'Failed to download the image'], 400);
@@ -326,7 +326,7 @@ class SetupController extends Controller
                 $logoUrl = "https://api.hydottech.com/storage/public/" . $h['CompanyLogo'];
 
                 // Define the path to store the logo in the public directory
-                $storagePath = 'images/company_logo'; // Path relative to the 'public' folder
+                $storagePath = 'storage'; // Path relative to the 'public' folder
 
                 // Create the directory if it doesn't exist
                 if (!file_exists(public_path($storagePath))) {
@@ -344,7 +344,7 @@ class SetupController extends Controller
                     file_put_contents($downloadedFilePath, $response->getBody());
 
                     // Update the CompanyLogo field in the Setup model with the path relative to the 'public' folder
-                    $s->CompanyLogo = $storagePath . '/' . $filename;
+                    $s->CompanyLogo = $filename;
                 } else {
                     // Handle unsuccessful image download
                     return response()->json(['message' => 'Failed to download the image'], 400);
