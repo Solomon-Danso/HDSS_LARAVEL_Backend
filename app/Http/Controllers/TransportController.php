@@ -66,6 +66,8 @@ class TransportController extends Controller
 
         $saver = $t->save();
         if($saver){
+            $message = "Added ".$t->FirstName." ".$t->OtherName." ".$t->LastName." to transport list";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
             return response()->json(["message"=>$t->FirstName." ".$t->OtherName." ".$t->LastName." successfully added to the transport list"],200);
         }
         else{
@@ -109,6 +111,9 @@ class TransportController extends Controller
 
         $saver = $t->save();
         if($saver){
+            $message = "Edited ".$t->FirstName." ".$t->OtherName." ".$t->LastName." information in transport list";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
             return response()->json(["message"=>$t->FirstName." ".$t->OtherName." ".$t->LastName." successfully updated"],200);
         }
         else{
@@ -131,6 +136,9 @@ class TransportController extends Controller
         }
 
         $t = Transport::where("CompanyId",$req->CompanyId)->get();
+
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Viewed All Transport Users");
+
 
         return $t;
         
@@ -162,6 +170,10 @@ class TransportController extends Controller
        
         $saver = $t->delete();
         if($saver){
+            $message = "Deleted ".$t->FirstName." ".$t->OtherName." ".$t->LastName." information in transport list";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+          
             return response()->json(["message"=>$t->FirstName." ".$t->OtherName." ".$t->LastName." successfully deleted"],200);
         }
         else{
@@ -198,7 +210,10 @@ class TransportController extends Controller
                 $studentsToPickup->push($student);
             }
         }
-    
+        
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,"Viewed all student registered for transport");
+
+
         return $studentsToPickup;
     }
 
@@ -252,6 +267,9 @@ class TransportController extends Controller
         
         $saver = $t->save();
         if($saver){
+            $message = "Picked Up ".$t->StudentName;
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
             return response()->json(["message"=>$t->StudentName." onboarding successfull"],200);
         }
         else{
@@ -279,6 +297,10 @@ class TransportController extends Controller
         ->where("PickupTime",Carbon::today())
         ->where("CompanyId",$req->CompanyId)
         ->where("Departure",false)->get();
+
+        $message = "Viewed all student picked up for the day";
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
 
         return $studentToDeList;
 
@@ -327,6 +349,9 @@ class TransportController extends Controller
         
         $saver = $t->save();
         if($saver){
+            $message = "Marked ".$t->FirstName." ".$t->OtherName." ".$t->LastName." for departure to destination";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
             return response()->json(["message"=>$t->StudentName." onboarding successfull"],200);
         }
         else{
@@ -355,6 +380,9 @@ class TransportController extends Controller
         ->where("DestinationArrival",false)
         ->where("CompanyId",$req->CompanyId)
         ->get();
+        
+        $message = "Viewed all students who have departed ";
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
 
         return $studentToDeList;
 
@@ -404,6 +432,9 @@ class TransportController extends Controller
         
         $saver = $t->save();
         if($saver){
+            $message = "Marked ".$t->FirstName." ".$t->OtherName." ".$t->LastName." as arrival to destination";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
             return response()->json(["message"=>$t->StudentName." onboarding successfull"],200);
         }
         else{

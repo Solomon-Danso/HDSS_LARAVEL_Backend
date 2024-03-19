@@ -459,18 +459,8 @@ function PermissionMgmt(){
         "StudentToDepartureList",
         "Departure",
         "StudentToDestinationArrival",
-        "DestinationArrival"
-        
-
-
-    ];
-
-    return $c;
-
-}
-
-function RegistrationMgmt(){
-    $c = [
+        "DestinationArrival",
+        "AddFees",
         "RegisterStaffMembers",
         "UpdateStaffMembers",
         "ViewStaffMembers",
@@ -488,38 +478,25 @@ function RegistrationMgmt(){
         "ViewStudentInSchool",
         "DeleteStudent",
         "GenerateStudentInClass",
-        "GenerateStudentInSchool"
+        "GenerateStudentInSchool",
+        "EditFees",
+        "ViewOneFees",
+        "ViewAllFees",
+        "DeleteFees",
+        "RunEndOfTerm",
+        
 
-
-
-
-
-
-
-
+        
 
 
     ];
 
     return $c;
-}
-
-function SystemRoles(){
-        $c = [
-            "CreateRoles",
-            "DeleteRoles",
-            "AssignRolesToUsers",
-            "AddNewRolesToUsers",
-            "ViewUserRoles",
-            "DeleteUserRole",
-            
-
-
-        ];
-
-        return $c;
 
 }
+
+
+
 
 
 function SuperAdminRegistration( $CompanyId,$Email,$FirstName,$PhoneNumber,$ProfilePic ){
