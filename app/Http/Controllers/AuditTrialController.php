@@ -152,7 +152,12 @@ class AuditTrialController extends Controller
 
 
 
-    function PrepaidMeter($CompanyId){
+    
+    
+    
+    
+    
+        function PrepaidMeter($CompanyId){
         $c = CompanyToken::where('CompanyId', $CompanyId)->latest()->first();
 
         if(!$c){
@@ -179,6 +184,7 @@ class AuditTrialController extends Controller
 
     }
 
+   
 
 
 

@@ -18,10 +18,14 @@
             line-height: 1.6;
         }
         .logo {
-            width: 150px;
-            height: 150px;
-           
-        }
+    width: 100%;
+    height: 100%;
+    opacity: 0.2; /* Adjust the opacity for watermark effect */
+    position: fixed; /* Changed to fixed for covering the entire page */
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure logo stays behind text */
+}
         .student-logo {
             width: 100px;
             height: auto;

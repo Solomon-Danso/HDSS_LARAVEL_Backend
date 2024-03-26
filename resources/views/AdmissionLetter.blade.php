@@ -10,18 +10,23 @@
             padding: 0;
         }
         .header {
-            color: #fff;
+            color: #000; /* Changed text color to black */
             text-align: center;
+            position: relative; /* Added for watermark positioning */
         }
         .content {
             padding: 20px;
             line-height: 1.6;
         }
         .logo {
-            width: 150px;
-            height: 150px;
-           
-        }
+    width: 100%;
+    height: 100%;
+    opacity: 0.2; /* Adjust the opacity for watermark effect */
+    position: fixed; /* Changed to fixed for covering the entire page */
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure logo stays behind text */
+}
         .student-logo {
             width: 100px;
             height: auto;
@@ -34,38 +39,32 @@
             margin: 20px auto;
             display: block;
         }
-        .Name-and-Date{
-            display:flex;
-            flex-direction:row;
-            justify-content:space-between;
+        .Name-and-Date {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
         }
         .spacer {
-        margin-left: 200px;
-    }
-    .schoolName{
-        font-size:30px;
-        color: black;
-        font-weight: bold;
-    }
-
-    .location{
-        font-size:25px;
-        color: black;
-    }
-    .theText{
-        font-size:16px;
-        color: black; 
-    }
-
-   
-
+            margin-left: 200px;
+        }
+        .schoolName {
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .location {
+            font-size: 25px;
+        }
+        .theText {
+            font-size: 16px;
+        }
     </style>
+
 </head>
 <body>
     <div class="header">
-        <img src="{{storage_path('app/public/'.$CompanyLogo) }}" alt="School Logo" class="logo">
-       
+        <img src="{{ storage_path('app/public/' . $CompanyLogo) }}" alt="School Logo" class="logo">
     </div>
+
     <div class="content">
 
         <div >

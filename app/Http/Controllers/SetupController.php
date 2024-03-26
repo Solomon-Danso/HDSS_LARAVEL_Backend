@@ -484,6 +484,8 @@ function PermissionMgmt(){
         "ViewAllFees",
         "DeleteFees",
         "RunEndOfTerm",
+        "CreateVideoCall",
+        "UpdateVideoCall",
         
 
         
