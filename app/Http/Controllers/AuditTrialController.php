@@ -91,10 +91,13 @@ class AuditTrialController extends Controller
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $device = $this->detectDevice($userAgent);
         $os =  $this->detectOperatingSystem($userAgent);
+        
         $stu = StaffMembers::where('StaffId', $StaffId)->where("CompanyId", $CompanyId)->first();
         if($stu==null){
             return response()->json(["message"=>"Staff does not exist"],400);
         }
+
+
         $urlPath = $_SERVER['REQUEST_URI'];
     
        
@@ -154,10 +157,52 @@ class AuditTrialController extends Controller
 
     
     
+
+    function LMSRoleAuthenticator($SenderId, $RoleFunction){
+
+        $RoleFunctionList = UserDetailedRole::where("UserId",$SenderId)->pluck('RoleFunction');
+    
+        // Check if the RoleFunctionList is empty
+        $isStudent = false;
+
+        if($RoleFunctionList->isEmpty()) {
+            $student = Student::where("StudentId",$SenderId)->first();
+            if($student!==null){
+                $isStudent = true;   
+            }
+            else{
+                return response()->json(["message"=>"User does not have any roles assigned"],400);
+            }
+        }
+    
+        // Flag to track if SuperAdmin role is found
+        $isSuperAdmin = false;
+    
+        foreach($RoleFunctionList as $Role){
+            if($Role === "SuperAdmin"){
+                // If the user is SuperAdmin, set the flag to true and break the loop
+                $isSuperAdmin = true;
+                break;
+            }
+        }
+    
+        // If the user is not SuperAdmin and the specified role does not match any of the user's roles
+        if (!$isStudent || (!$isSuperAdmin && !$RoleFunctionList->contains($RoleFunction)) ) {
+            return response()->json(["message"=>"User not authorised to perform this task"],400);
+        }
+    
+        }
+    
+    
+
+
+
     
     
     
-        function PrepaidMeter($CompanyId){
+    
+    
+function PrepaidMeter($CompanyId){
         $c = CompanyToken::where('CompanyId', $CompanyId)->latest()->first();
 
         if(!$c){

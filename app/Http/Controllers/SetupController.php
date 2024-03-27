@@ -486,7 +486,17 @@ function PermissionMgmt(){
         "RunEndOfTerm",
         "CreateVideoCall",
         "UpdateVideoCall",
+        "AddSubject",
+        "UpdateSubject",
+        "ViewSubject",
+        "DeleteSubject",
+        "AddLevel",
+        "UpdateLevel",
+        "ViewLevel",
+        "DeleteLevel",
+        "CountStudentInClass",
         
+
 
         
 

@@ -7,7 +7,15 @@ use App\Http\Controllers\AuditTrialController;
 use App\Http\Controllers\Roles;
 use App\Models\VideoCall;
 use App\Models\StaffMembers;
+use App\Models\Subject;
 use Carbon\Carbon;
+use App\Models\Classes;
+use App\Models\Student;
+use App\Models\TeacherInSubject;
+
+
+
+
 
 class LMS extends Controller
 {
@@ -175,6 +183,11 @@ class LMS extends Controller
             return $response;
         }
 
+        $UserRole = $this->audit->LMSRoleAuthenticator($req->SenderId, "ViewAllVideoCall");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
 
 
         $v = VideoCall::where("CompanyId",$req->CompanyId)
@@ -188,9 +201,14 @@ class LMS extends Controller
         
         
             $message = "Viewed All ".$v->Subject." video calls for ".$v->Level." ";
-            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+           $Dual = $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+     
+           if ($Dual !== null && $Dual->getStatusCode() !== 200) {
+            $this->audit->StudentAudit($req->SenderId,$req->CompanyId,$message);
+            }
 
-            return response()->json(["message"=>$v],200);
+
+            return $v;
        
 
 
@@ -232,6 +250,453 @@ class LMS extends Controller
 
 
     }
+
+    function AddSubject(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "AddSubject");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = new Subject();
+
+        if($req->filled("SubjectName")){
+            $s->SubjectName = $req->SubjectName;
+        }
+
+       
+        if($req->filled("CompanyId")){
+            $s->CompanyId = $req->CompanyId;
+        }
+
+        $saver = $s->save();
+        if($saver){
+            $message = "Added ".$s->SubjectName." to subject list ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Subject added successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not add a subject"],400);
+        }
+
+
+
+
+    }
+
+    function UpdateSubject(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "UpdateSubject");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Subject::where("id", $req->Id)->where("CompanyId", $req->CompanyId)->first();
+
+        if($s==null){
+            return response()->json(["message"=>"Subject not found"],400);
+        }
+
+        if($req->filled("SubjectName")){
+            $s->SubjectName = $req->SubjectName;
+        }
+
+       
+        if($req->filled("CompanyId")){
+            $s->CompanyId = $req->CompanyId;
+        }
+
+        $saver = $s->save();
+        if($saver){
+            $message = "Updated ".$s->SubjectName." in subject list ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Subject updated successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not update the subject"],400);
+        }
+
+
+
+
+    }
+
+    function ViewSubject(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->LMSRoleAuthenticator($req->SenderId, "ViewSubject");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Subject::where("CompanyId", $req->CompanyId)->get();
+
+       
+       
+            $message = "Viewed subject list ";
+            $Dual = $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+     
+            if ($Dual !== null && $Dual->getStatusCode() !== 200) {
+             $this->audit->StudentAudit($req->SenderId,$req->CompanyId,$message);
+             }
+       
+            return $s;
+        
+
+
+
+
+    }
+
+    function DeleteSubject(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteSubject");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Subject::where("id", $req->Id)->where("CompanyId", $req->CompanyId)->first();
+
+        if($s==null){
+            return response()->json(["message"=>"Subject not found"],400);
+        }
+
+        
+        $saver = $s->delete();
+        if($saver){
+            $message = "Deleted ".$s->SubjectName." in subject list ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Subject deleted successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not delete the subject"],400);
+        }
+
+
+
+
+    }
+
+
+    function AddLevel(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "AddLevel");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = new Classes();
+
+        if($req->filled("CompanyId")){
+            $s->CompanyId = $req->CompanyId;
+        }
+
+       
+        if($req->filled("ClassName")){
+            $s->ClassName = $req->ClassName;
+        }
+
+        if($req->filled("ClassCode")){
+            $s->ClassCode = $req->ClassCode;
+        }
+
+        if($req->filled("Campus")){
+            $s->Campus = $req->Campus;
+        }
+
+        if($req->filled("TeacherId")){
+            $s->TeacherId = $req->TeacherId;
+        }
+
+        $t = StaffMembers::where("CompanyId",$req->CompanyId)->where("StaffId",$req->TeacherId)->first();
+        if($t==null){
+            return response()->json(["message"=>"Tutor not found"],400);
+        }
+
+
+       
+            $s->ClassTeacher = $t->FirstName." ".$t->OtherName." ".$t->LastName;
+        
+
+
+
+
+        $saver = $s->save();
+        if($saver){
+            $message = "Added ".$s->ClassName." to School Stages ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Level added successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not add Level"],400);
+        }
+
+
+
+
+    }
+
+    function UpdateLevel(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "UpdateLevel");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Classes::where("id",$req->Id)->first();
+        if($s==null){
+            return response()->json(["message","Stage not found"],400);
+        }
+
+        if($req->filled("CompanyId")){
+            $s->CompanyId = $req->CompanyId;
+        }
+
+       
+        if($req->filled("ClassName")){
+            $s->ClassName = $req->ClassName;
+        }
+
+        if($req->filled("ClassCode")){
+            $s->ClassCode = $req->ClassCode;
+        }
+
+        if($req->filled("Campus")){
+            $s->Campus = $req->Campus;
+        }
+
+        if($req->filled("TeacherId")){
+            $s->TeacherId = $req->TeacherId;
+        }
+
+        $t = StaffMembers::where("CompanyId",$req->CompanyId)->where("StaffId",$req->TeacherId)->first();
+        if($t==null){
+            return response()->json(["message"=>"Tutor not found"],400);
+        }
+
+
+       
+            $s->ClassTeacher = $t->FirstName." ".$t->OtherName." ".$t->LastName;
+        
+
+
+
+
+        $saver = $s->save();
+        if($saver){
+            $message = "Updated ".$s->ClassName." in School Stages ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Level updated successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not add Level"],400);
+        }
+
+
+
+
+    }
+
+    function ViewLevel(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "ViewLevel");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Classes::where("CompanyId",$req->CompanyId)->get();
+        $message = "Viewed all School Stages ";
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return $s;
+       
+
+
+
+
+    }
+
+    function DeleteLevel(Request $req){
+
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "DeleteLevel");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        
+
+        $s = Classes::where("id",$req->Id)->first();
+        if($s==null){
+            return response()->json(["message","Stage not found"],400);
+        }
+
+        
+        $saver = $s->delete();
+        if($saver){
+            $message = "Deleted ".$s->ClassName." in School Stages ";
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>"Level deleted successfully"],200);
+        }
+        else{
+            return response()->json(["message"=>"Could not delete Level"],400);
+        }
+
+
+
+
+    }
+
+    function CountStudentInClass(Request $req){
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "CountStudentInClass");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        $counter = Student::where("CompanyId", $req->CompanyId)->where("Level",$req->Level)->count();
+
+        $message = "Counted Student in".$req->Level;
+        $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+        return $counter;
+
+
+
+
+
+
+
+
+    }
+
+    function AssignTeacherToClass(Request $req){
+        $response = $this->audit->PrepaidMeter($req->CompanyId);
+
+        if ($response !== null && $response->getStatusCode() !== 200) {
+            return $response;
+        }
+
+        $UserRole = $this->audit->RoleAuthenticator($req->SenderId, "AssignTeacherToClass");
+        if ($UserRole !== null && $UserRole->getStatusCode() !== 200) {
+            return $UserRole;
+        }
+
+        $t = StaffMembers::where("CompanyId",$req->CompanyId)->where("StaffId",$req->StaffId)->first();
+        if($t==null){
+            return response()->json(["message"=>"Tutor not found"],400);
+        }
+
+        $c = Classes::where("CompanyId",$req->CompanyId)->where("ClassName",$req->ClassName)->first();
+        if($c==null){
+            return response()->json(["message"=>"Tutor not found"],400);
+        }
+
+        $s = Subject::where("CompanyId",$req->CompanyId)->where("SubjectName",$req->SubjectName)->first();
+        if($s==null){
+            return response()->json(["message"=>"Tutor not found"],400);
+        }
+
+        $AssignT = new TeacherInSubject();
+
+        $AssignT->CompanyId = $t->CompanyId;
+        $AssignT->StaffID = $t->StaffID;
+        $AssignT->StaffName = $t->FirstName." ".$t->OtherName." ".$t->LastName;
+        $AssignT->ClassName = $c->ClassName;
+        $AssignT->SubjectName = $s->SubjectName;
+
+        $saver = $AssignT->save();
+        if($saver){
+            $message = "Assigned ".$AssignT->SubjectName." for ". $AssignT->ClassName ."to ".$AssignT->StaffName;
+            $this->audit->StaffMemberAudit($req->SenderId,$req->CompanyId,$message);
+
+            return response()->json(["message"=>$message],200);
+        }
+        else{
+            $message = "Could not Assign ".$AssignT->SubjectName." for ". $AssignT->ClassName ."to ".$AssignT->StaffName;
+
+         return response()->json(["message"=>$message],400);
+        }
+
+
+
+
+
+
+    }
+
+
 
 
 
